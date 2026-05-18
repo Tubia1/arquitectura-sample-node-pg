@@ -9,9 +9,9 @@ export default class CalificacionesRepository {
     getAllAsync = async () => {
         console.log(`CalificacionesRepository.getAllAsync()`);
         const sql = `
-        SELECT alumno.nombre as nombre_alumno, materia.nombre as nombre_materia,* FROM Calificaciones 
-        inner join alumno on calificaciones.id_alumno = alumno.id 
-        inner join alumno on calificaciones.id_materia = materias.id   
+        SELECT alumnos.nombre as nombre_alumno, materias.nombre as nombre_materia,* FROM calificaciones 
+        inner join alumnos on calificaciones.id_alumno = alumnos.id 
+        inner join materias on calificaciones.id_materia = materias.id   
         `;
       
         return await this.db.queryAll(sql);
@@ -20,10 +20,10 @@ export default class CalificacionesRepository {
     getByIdAsync = async (id) => {
         console.log(`CalificacionesRepository.getByIdAsync(${id})`);
         const sql = `
-        SELECT alumno.nombre as nombre_alumno, materia.nombre as nombre_materia,* FROM Calificaciones 
-        inner join alumno on calificaciones.id_alumno = alumno.id 
-        inner join alumno on calificaciones.id_materia = materias.id   
-       where id = $1 
+        SELECT alumnos.nombre as nombre_alumno, materias.nombre as nombre_materia,* FROM calificaciones 
+        inner join alumnos on calificaciones.id_alumno = alumnos.id 
+        inner join materias on calificaciones.id_materia = materias.id   
+       where materias.id = $1 
         `;
 
      
@@ -32,27 +32,27 @@ export default class CalificacionesRepository {
 
     createAsync = async (entity) => {
         console.log(`CalificacionesRepository.createAsync(${JSON.stringify(entity)})`);
-        const sql = `SELECT alumno.nombre as nombre_alumno, materia.nombre as nombre_materia,* FROM Calificaciones 
-        inner join alumno on calificaciones.id_alumno = alumno.id 
-        inner join alumno on calificaciones.id_materia = materias.id   
-        where id_alumno = $1 
-        `;
-        const values = [entity?.id_alumno ?? 0];
+        const sql = `INSERT INTO calificaciones (id_alumno, id_materia, nota) VALUES ($1, $2, $3) RETURNING id`;
+        const values = [
+            entity?.id_alumno ?? 0,
+            entity?.id_materia ?? 0,
+            entity?.nota ?? null
+        ];
         return await this.db.queryReturnId(sql, values);
     }
 
     updateAsync = async (entity) => {
         console.log(`CalificacionesRepository.updateAsync(${JSON.stringify(entity)})`);
-        const sql = `UPDATE Calificaciones SET nombre = $2 WHERE id = $1`;
+        const sql = `UPDATE calificaciones SET nota = $2 WHERE id = $1 `;
         const values =  [   entity.id, 
-                            entity?.nombre ?? ''
+                            entity?.nota 
                         ];
         return await this.db.queryRowCount(sql, values);
     }
 
     deleteByIdAsync = async (id) => {
         console.log(`CalificacionesRepository.deleteByIdAsync(${id})`);
-        const sql = `DELETE FROM Calificaciones WHERE id=$1`;
+        const sql = `DELETE FROM calificaciones WHERE id=$1`;
         return await this.db.queryRowCount(sql, [id]);
     }
 }

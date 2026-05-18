@@ -22,7 +22,10 @@ router.get('', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     try {
-        let id = req.params.id;
+        let id = parseInt(req.params.id);
+        if (Number.isNaN(id)) {
+            return res.status(StatusCodes.BAD_REQUEST).send(`Id inválido.`);
+        }
         const returnEntity = await currentService.getByIdAsync(id);
         if (returnEntity != null){
             res.status(StatusCodes.OK).json(returnEntity);
@@ -74,7 +77,10 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     try {
-        let id = req.params.id;
+        let id = parseInt(req.params.id);
+        if (Number.isNaN(id)) {
+            return res.status(StatusCodes.BAD_REQUEST).send(`Id inválido.`);
+        }
         const rowCount = await currentService.deleteByIdAsync(id);
         if (rowCount != 0){
             res.status(StatusCodes.OK).json(null);
